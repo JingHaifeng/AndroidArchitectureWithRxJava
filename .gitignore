@@ -32,6 +32,6 @@ proguard/
 captures/
 
 # IDEA folder
-.idea/
+.idea/*
 *.iml
 
