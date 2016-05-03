@@ -2,20 +2,16 @@
 <FrameLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    >
+    android:layout_height="match_parent">
 
-    <com.lsjwzh.widget.recyclerviewpager.RecyclerViewPager
+    <com.alphabet.lib.widgets.RVViewPager
         android:id="@+id/recycler_view"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
-        android:paddingLeft="30dp"
-        android:paddingRight="30dp"
-        app:singlePageFling="true"
-        app:triggerOffset="1">
-    </com.lsjwzh.widget.recyclerviewpager.RecyclerViewPager>
+        android:paddingLeft="35dp"
+        android:paddingRight="35dp">
+    </com.alphabet.lib.widgets.RVViewPager>
 
     <TextView
         android:id="@+id/empty_tv"
