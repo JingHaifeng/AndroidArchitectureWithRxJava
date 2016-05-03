@@ -100,13 +100,15 @@ public class FuliPresenter implements FuliContract.Presenter {
 
     @Override
     public void loadNextPage() {
-        loadPage(++mPage);
+        loadPage(mPage + 1);
     }
 
     @Override
     public void subscribe() {
         if (mCache.isEmpty()) {
             loadPage(1);
+        } else {
+            mFuliView.setDataList(new ArrayList<>(mCache));
         }
     }
 

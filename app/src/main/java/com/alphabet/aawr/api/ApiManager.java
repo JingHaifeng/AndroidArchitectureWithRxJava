@@ -13,7 +13,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ApiManager {
 
     private volatile static ApiManager sInstance = new ApiManager();
-    public static final long TIME_OUT = 15; //SECONDS
+    public static final long TIME_OUT = 5; //SECONDS
 
     private OkHttpClient mOkHttpClient;
     private GankApi mGankApi;

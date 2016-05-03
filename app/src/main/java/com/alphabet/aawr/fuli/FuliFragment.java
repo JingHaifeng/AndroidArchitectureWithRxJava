@@ -17,7 +17,9 @@ import android.widget.Toast;
 
 import com.alphabet.aawr.R;
 import com.alphabet.aawr.data.FuliData;
+import com.alphabet.aawr.fuli.widget.ViewPagerLayoutManager;
 import com.bumptech.glide.Glide;
+import com.orhanobut.logger.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -68,7 +70,7 @@ public class FuliFragment extends Fragment implements FuliContract.View {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_fuli, container, false);
         mUnbinder = ButterKnife.bind(this, root);
-        mLinearLayoutManager = new LinearLayoutManager(getContext(),
+        mLinearLayoutManager = new ViewPagerLayoutManager(getContext(),
                 LinearLayoutManager.HORIZONTAL, false);
         mRecyclerView.setLayoutManager(mLinearLayoutManager);
         mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
@@ -86,14 +88,7 @@ public class FuliFragment extends Fragment implements FuliContract.View {
                 }
             }
         });
-        mAdapter = new Adapter(this);
-        mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
-            @Override
-            public void onChanged() {
-                super.onChanged();
-                showRetryTip();
-            }
-        });
+        mAdapter = new Adapter(this, mEmptyTv);
         mRecyclerView.setAdapter(mAdapter);
 
         mEmptyTv.setOnClickListener(new View.OnClickListener() {
@@ -104,12 +99,6 @@ public class FuliFragment extends Fragment implements FuliContract.View {
         });
         return root;
     }
-
-    private void showRetryTip() {
-        boolean isEmpty = mAdapter.getItemCount() == 0;
-        mEmptyTv.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
-    }
-
 
     @Override
     public void onResume() {
@@ -138,13 +127,15 @@ public class FuliFragment extends Fragment implements FuliContract.View {
     public void setLoadingIndicator(boolean indicator) {
         isLoading = indicator;
         if (isLoading) {
+            mLoadingView.show();
             if (mEmptyTv.getVisibility() == View.VISIBLE) {
                 mEmptyTv.setVisibility(View.GONE);
             }
-            mLoadingView.show();
         } else {
             mLoadingView.hide();
         }
+
+        Logger.d("setLoadingIndicator : " + indicator);
     }
 
     @Override
@@ -155,6 +146,7 @@ public class FuliFragment extends Fragment implements FuliContract.View {
     @Override
     public void allCompleted(boolean completed) {
         isAllCompeleted = completed;
+        Logger.d("allCompleted : " + completed);
     }
 
     @Override
@@ -175,13 +167,14 @@ public class FuliFragment extends Fragment implements FuliContract.View {
     private static class Adapter extends RecyclerView.Adapter<ItemViewHolder> {
 
         private List<FuliData> mFuliDatas;
-
         private Fragment mFragment;
+        private View mEmptyView;
 
 
-        public Adapter(Fragment fragment) {
+        public Adapter(Fragment fragment, View emptyView) {
             mFuliDatas = new ArrayList<>();
             mFragment = fragment;
+            mEmptyView = emptyView;
         }
 
         @Override
@@ -205,6 +198,7 @@ public class FuliFragment extends Fragment implements FuliContract.View {
 
         public void setFuliDatas(List<FuliData> fuliDatas) {
             mFuliDatas = fuliDatas;
+            mEmptyView.setVisibility(fuliDatas.isEmpty() ? View.VISIBLE : View.GONE);
             notifyDataSetChanged();
         }
     }
