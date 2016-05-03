@@ -11,8 +11,10 @@ import com.alphabet.aawr.api.ApiManager;
 import com.alphabet.aawr.api.GankApi;
 import com.alphabet.aawr.data.FuliData;
 import com.alphabet.aawr.data.HttpResult;
+import com.orhanobut.logger.Logger;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import rx.Observer;
@@ -37,6 +39,8 @@ public class FuliPresenter implements FuliContract.Presenter {
 
     private int mPage;
 
+    private boolean isAllCompelted;
+
     public FuliPresenter(@NonNull FuliContract.View fuliView) {
         mFuliView = fuliView;
         mFuliView.setPresenter(this);
@@ -46,11 +50,9 @@ public class FuliPresenter implements FuliContract.Presenter {
     }
 
     @Override
-    public void loadPage(int page) {
-        mPage = page;
-
+    public void loadPage(final int page) {
+        Logger.d("begin load page : " + page);
         mFuliView.setLoadingIndicator(true);
-
         Subscription subscription = mGankApi.getFuliPageData(page)
                 .map(new Func1<HttpResult<FuliData>, List<FuliData>>() {
                     @Override
@@ -63,17 +65,32 @@ public class FuliPresenter implements FuliContract.Presenter {
                 .subscribe(new Observer<List<FuliData>>() {
                     @Override
                     public void onCompleted() {
+                        mPage = page;
+                        Logger.d("Completed!");
                         mFuliView.setLoadingIndicator(false);
+                        mFuliView.showMessage("加载成功:)");
                     }
 
                     @Override
                     public void onError(Throwable e) {
-
+                        Logger.d("e:" + e.getMessage());
+                        mFuliView.setDataList(new ArrayList<>(mCache));
+                        mFuliView.setLoadingIndicator(false);
+                        mFuliView.showMessage(e.getMessage());
                     }
 
                     @Override
                     public void onNext(List<FuliData> fuliDataList) {
+                        if (fuliDataList.isEmpty() || fuliDataList.size() < GankApi.PAGE_SIZE) {
+                            isAllCompelted = true;
+                        } else {
+                            isAllCompelted = false;
+                        }
+                        for (FuliData fuliData : fuliDataList) {
+                            Logger.d(fuliData.toString());
+                        }
                         mCache.addAll(fuliDataList);
+                        mFuliView.allCompleted(isAllCompelted);
                         mFuliView.setDataList(new ArrayList<>(mCache));
                     }
                 });

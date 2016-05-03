@@ -21,7 +21,7 @@ public class FuliActivity extends AppCompatActivity {
         FuliFragment fuliFragment = (FuliFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
         if (fuliFragment == null) {
             fuliFragment = FuliFragment.newInstance();
-            ActivityUtils.addFragmentToActivity(getSupportFragmentManager(),
+            ActivityUtils.replaceFragmentToActivity(getSupportFragmentManager(),
                     fuliFragment, R.id.fragment_container);
         }
 

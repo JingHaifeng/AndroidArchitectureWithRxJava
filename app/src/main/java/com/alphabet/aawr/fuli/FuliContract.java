@@ -25,5 +25,8 @@ public interface FuliContract {
 
         void setDataList(List<FuliData> fuliDataList);
 
+        void allCompleted(boolean completed);
+
+        void showMessage(String error);
     }
 }

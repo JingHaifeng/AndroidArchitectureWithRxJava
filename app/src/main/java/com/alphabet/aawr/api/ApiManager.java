@@ -1,5 +1,7 @@
 package com.alphabet.aawr.api;
 
+import java.util.concurrent.TimeUnit;
+
 import okhttp3.OkHttpClient;
 import retrofit2.Retrofit;
 import retrofit2.adapter.rxjava.RxJavaCallAdapterFactory;
@@ -11,12 +13,16 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ApiManager {
 
     private volatile static ApiManager sInstance = new ApiManager();
+    public static final long TIME_OUT = 15; //SECONDS
 
     private OkHttpClient mOkHttpClient;
     private GankApi mGankApi;
 
     private ApiManager() {
-        mOkHttpClient = new OkHttpClient();
+        mOkHttpClient = new OkHttpClient
+                .Builder()
+                .connectTimeout(TIME_OUT, TimeUnit.SECONDS)
+                .build();
     }
 
     public static ApiManager getInstance() {

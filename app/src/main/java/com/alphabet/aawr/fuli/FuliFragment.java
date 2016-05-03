@@ -12,6 +12,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alphabet.aawr.R;
 import com.alphabet.aawr.data.FuliData;
@@ -33,11 +35,16 @@ public class FuliFragment extends Fragment implements FuliContract.View {
 
     private boolean isLoading;
 
+    private boolean isAllCompeleted;
+
     @BindView(R.id.recycler_view)
     RecyclerView mRecyclerView;
 
     @BindView(R.id.loading)
     ContentLoadingProgressBar mLoadingView;
+
+    @BindView(R.id.empty_tv)
+    TextView mEmptyTv;
 
     private Adapter mAdapter;
     private Unbinder mUnbinder;
@@ -74,14 +81,33 @@ public class FuliFragment extends Fragment implements FuliContract.View {
             public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
                 int lastItem = getLastVisiblePosition(recyclerView);
-                if (lastItem + 1 == mAdapter.getItemCount()) {
+                if (!isAllCompeleted && !isLoading && lastItem + 1 == mAdapter.getItemCount()) {
                     mPresenter.loadNextPage();
                 }
             }
         });
         mAdapter = new Adapter(this);
+        mAdapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
+            @Override
+            public void onChanged() {
+                super.onChanged();
+                showRetryTip();
+            }
+        });
         mRecyclerView.setAdapter(mAdapter);
+
+        mEmptyTv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mPresenter.loadPage(1);
+            }
+        });
         return root;
+    }
+
+    private void showRetryTip() {
+        boolean isEmpty = mAdapter.getItemCount() == 0;
+        mEmptyTv.setVisibility(isEmpty ? View.VISIBLE : View.GONE);
     }
 
 
@@ -112,6 +138,9 @@ public class FuliFragment extends Fragment implements FuliContract.View {
     public void setLoadingIndicator(boolean indicator) {
         isLoading = indicator;
         if (isLoading) {
+            if (mEmptyTv.getVisibility() == View.VISIBLE) {
+                mEmptyTv.setVisibility(View.GONE);
+            }
             mLoadingView.show();
         } else {
             mLoadingView.hide();
@@ -121,6 +150,16 @@ public class FuliFragment extends Fragment implements FuliContract.View {
     @Override
     public void setDataList(List<FuliData> fuliDataList) {
         mAdapter.setFuliDatas(fuliDataList);
+    }
+
+    @Override
+    public void allCompleted(boolean completed) {
+        isAllCompeleted = completed;
+    }
+
+    @Override
+    public void showMessage(String error) {
+        Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
     }
 
     static class ItemViewHolder extends RecyclerView.ViewHolder {
@@ -156,7 +195,6 @@ public class FuliFragment extends Fragment implements FuliContract.View {
             FuliData fuliData = mFuliDatas.get(position);
             Glide.with(mFragment)
                     .load(fuliData.url)
-                    .placeholder(null)
                     .into(holder.mPic);
         }
 
