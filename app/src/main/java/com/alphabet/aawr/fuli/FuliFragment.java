@@ -1,7 +1,11 @@
 package com.alphabet.aawr.fuli;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.ContentLoadingProgressBar;
 import android.support.v7.widget.GridLayoutManager;
@@ -17,8 +21,13 @@ import android.widget.Toast;
 
 import com.alphabet.aawr.R;
 import com.alphabet.aawr.data.FuliData;
+import com.alphabet.aawr.detail.FuliDetailActivity;
 import com.alphabet.aawr.fuli.widget.ViewPagerLayoutManager;
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.bumptech.glide.load.resource.drawable.GlideDrawable;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.orhanobut.logger.Logger;
 
 import java.util.ArrayList;
@@ -154,22 +163,78 @@ public class FuliFragment extends Fragment implements FuliContract.View {
         Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
     }
 
-    static class ItemViewHolder extends RecyclerView.ViewHolder {
+    public void startFuliDetailActivity(final View transitView, final FuliData fuliData) {
+//        Glide.with(this).load(fuliData.url).listener(new RequestListener<String, GlideDrawable>() {
+//            @Override
+//            public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
+//                Toast.makeText(getContext(), fuliData.url + " load failed", Toast.LENGTH_SHORT);
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
+        Intent intent = FuliDetailActivity.newIntent(getContext(), fuliData);
+        ActivityOptionsCompat optionsCompat
+                = ActivityOptionsCompat.makeSceneTransitionAnimation(
+                getActivity(), transitView, FuliDetailActivity.TRANSIT_PIC);
+        try {
+            ActivityCompat.startActivity(getActivity(), intent,
+                    optionsCompat.toBundle());
+        } catch (IllegalArgumentException e) {
+            e.printStackTrace();
+            startActivity(intent);
+        }
+//                return false;
+//            }
+//        });
+
+//        Glide.with(getActivity())
+//                .load(fuliData.url)
+//                .asBitmap()
+//                .dontAnimate()
+//                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
+//                .listener(new RequestListener<String, Bitmap>() {
+//                    @Override
+//                    public boolean onException(Exception e, String model, Target<Bitmap> target, boolean isFirstResource) {
+//                        Logger.d("onException");
+//                        return false;
+//                    }
+//
+//                    @Override
+//                    public boolean onResourceReady(Bitmap resource, String model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
+//                        Logger.d("onResourceReady");
+//                        return false;
+//                    }
+//                });
+    }
+
+    class ItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @BindView(R.id.pic)
         ImageView mPic;
+
+        FuliData mFuliData;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+            itemView.setOnClickListener(this);
+            Logger.d("ItemViewHolder created");
+        }
+
+        @Override
+        public void onClick(View v) {
+            Logger.d("ViewHolder onClick per");
+            if (mFuliData != null) {
+                startFuliDetailActivity(mPic, mFuliData);
+            }
         }
     }
 
-    private static class Adapter extends RecyclerView.Adapter<ItemViewHolder> {
+    private class Adapter extends RecyclerView.Adapter<ItemViewHolder> {
 
         private List<FuliData> mFuliDatas;
         private Fragment mFragment;
         private View mEmptyView;
-
 
         public Adapter(Fragment fragment, View emptyView) {
             mFuliDatas = new ArrayList<>();
@@ -186,6 +251,7 @@ public class FuliFragment extends Fragment implements FuliContract.View {
         @Override
         public void onBindViewHolder(ItemViewHolder holder, int position) {
             FuliData fuliData = mFuliDatas.get(position);
+            holder.mFuliData = fuliData;
             Glide.with(mFragment)
                     .load(fuliData.url)
                     .into(holder.mPic);
@@ -201,6 +267,7 @@ public class FuliFragment extends Fragment implements FuliContract.View {
             mEmptyView.setVisibility(fuliDatas.isEmpty() ? View.VISIBLE : View.GONE);
             notifyDataSetChanged();
         }
+
     }
 
     /**

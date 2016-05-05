@@ -1,9 +1,12 @@
 package com.alphabet.aawr.data;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 /**
  * Created by alphabet on 5/2/16.
  */
-public class FuliData {
+public class FuliData implements Parcelable {
 
     /**
      * _id : 5722b27b67765974fbfcf9b9
@@ -27,6 +30,30 @@ public class FuliData {
     public boolean used;
     public String who;
 
+    protected FuliData(Parcel in) {
+        _id = in.readString();
+        createdAt = in.readString();
+        desc = in.readString();
+        publishedAt = in.readString();
+        source = in.readString();
+        type = in.readString();
+        url = in.readString();
+        used = in.readByte() != 0;
+        who = in.readString();
+    }
+
+    public static final Creator<FuliData> CREATOR = new Creator<FuliData>() {
+        @Override
+        public FuliData createFromParcel(Parcel in) {
+            return new FuliData(in);
+        }
+
+        @Override
+        public FuliData[] newArray(int size) {
+            return new FuliData[size];
+        }
+    };
+
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
@@ -40,5 +67,23 @@ public class FuliData {
         stringBuilder.append("used:" + used).append("\n");
         stringBuilder.append("who:" + who).append("\n");
         return stringBuilder.toString();
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(_id);
+        dest.writeString(createdAt);
+        dest.writeString(desc);
+        dest.writeString(publishedAt);
+        dest.writeString(source);
+        dest.writeString(type);
+        dest.writeString(url);
+        dest.writeByte((byte) (used ? 1 : 0));
+        dest.writeString(who);
     }
 }

@@ -1,7 +1,7 @@
 package com.alphabet.aawr.fuli;
 
 import com.alphabet.aawr.data.FuliData;
-import com.alphabet.lib.mvp.BaesView;
+import com.alphabet.lib.mvp.BaseView;
 import com.alphabet.lib.mvp.BasePresenter;
 
 import java.util.List;
@@ -19,7 +19,7 @@ public interface FuliContract {
 
     }
 
-    interface View extends BaesView<Presenter> {
+    interface View extends BaseView<Presenter> {
 
         void setLoadingIndicator(boolean indicator);
 
