@@ -5,14 +5,11 @@ import android.util.SparseArray;
 
 import com.alphabet.aawr.api.ApiManager;
 import com.alphabet.aawr.api.GankApi;
-import com.alphabet.aawr.daily.data.BaseData;
 import com.alphabet.aawr.daily.data.DailyData;
 import com.alphabet.aawr.daily.data.HistoryData;
-import com.alphabet.aawr.daily.data.HttpResult;
 import com.orhanobut.logger.Logger;
 
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import rx.Observable;
@@ -32,7 +29,7 @@ public class DailyPresenter implements DailyContract.Presenter {
 
     private CompositeSubscription mSubscriptions;
 
-    private DailyContract.View mFuliView;
+    private DailyContract.View mView;
 
     private List<DailyData> mCache;
 
@@ -48,9 +45,9 @@ public class DailyPresenter implements DailyContract.Presenter {
 
     private boolean isAllCompelted;
 
-    public DailyPresenter(@NonNull DailyContract.View fuliView) {
-        mFuliView = fuliView;
-        mFuliView.setPresenter(this);
+    public DailyPresenter(@NonNull DailyContract.View view) {
+        mView = view;
+        mView.setPresenter(this);
         mCache = new ArrayList<>();
         mSubscriptions = new CompositeSubscription();
         mGankApi = ApiManager.getInstance().getGankApi();
@@ -63,7 +60,7 @@ public class DailyPresenter implements DailyContract.Presenter {
             return;
         }
         Logger.d("begin load page : " + page);
-        mFuliView.setLoadingIndicator(true);
+        mView.setLoadingIndicator(true);
         Observable.merge(getPageList(page))
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
@@ -73,20 +70,20 @@ public class DailyPresenter implements DailyContract.Presenter {
                     @Override
                     public void onCompleted() {
                         mCache.addAll(mDailyDatas);
-                        mFuliView.setDataList(new ArrayList<>(mCache));
+                        mView.setDataList(new ArrayList<>(mCache));
                         mPage = page;
                         if (mPage == mMaxPage - 1) {
-                            mFuliView.allCompleted(true);
+                            mView.allCompleted(true);
                         } else {
-                            mFuliView.allCompleted(false);
+                            mView.allCompleted(false);
                         }
-                        mFuliView.setLoadingIndicator(false);
+                        mView.setLoadingIndicator(false);
                     }
 
                     @Override
                     public void onError(Throwable e) {
-                        mFuliView.showMessage("e:" + e.getMessage());
-                        mFuliView.setLoadingIndicator(false);
+                        mView.showMessage("e:" + e.getMessage());
+                        mView.setLoadingIndicator(false);
                     }
 
                     @Override
@@ -128,7 +125,7 @@ public class DailyPresenter implements DailyContract.Presenter {
             // 首先获取当前的历史
             loadPage(mPage);
         } else {
-            mFuliView.setDataList(new ArrayList<DailyData>(mCache));
+            mView.setDataList(new ArrayList<DailyData>(mCache));
         }
     }
 
@@ -181,7 +178,7 @@ public class DailyPresenter implements DailyContract.Presenter {
                     @Override
                     public void onError(Throwable e) {
                         Logger.d("e:" + e.getMessage());
-                        mFuliView.setLoadingIndicator(false);
+                        mView.setLoadingIndicator(false);
                     }
 
                     @Override
