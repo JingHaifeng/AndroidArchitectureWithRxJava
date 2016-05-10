@@ -43,7 +43,7 @@ public class DailyPresenter implements DailyContract.Presenter {
 
     private int mMaxSize;
 
-    private boolean isAllCompelted;
+    private boolean isAllCompelted = false;
 
     public DailyPresenter(@NonNull DailyContract.View view) {
         mView = view;
@@ -55,6 +55,11 @@ public class DailyPresenter implements DailyContract.Presenter {
 
     @Override
     public void loadPage(final int page) {
+        if (mDayIndexSparseArray == null || mDayIndexSparseArray.size() == 0) {
+            loadHistory();
+            return;
+        }
+
         if (page < 0 || page > mMaxPage) {
             Logger.e("invalid page");
             return;
@@ -73,10 +78,12 @@ public class DailyPresenter implements DailyContract.Presenter {
                         mView.setDataList(new ArrayList<>(mCache));
                         mPage = page;
                         if (mPage == mMaxPage - 1) {
-                            mView.allCompleted(true);
+                            isAllCompelted = true;
                         } else {
-                            mView.allCompleted(false);
+                            isAllCompelted = false;
+                            mView.showMessage("所有数据已加载");
                         }
+                        mView.allCompleted(isAllCompelted);
                         mView.setLoadingIndicator(false);
                     }
 
@@ -115,11 +122,6 @@ public class DailyPresenter implements DailyContract.Presenter {
 
     @Override
     public void subscribe() {
-
-        if (mDayIndexSparseArray == null || mDayIndexSparseArray.size() == 0) {
-            loadHistory();
-            return;
-        }
 
         if (mCache.isEmpty()) {
             // 首先获取当前的历史
@@ -178,6 +180,7 @@ public class DailyPresenter implements DailyContract.Presenter {
                     @Override
                     public void onError(Throwable e) {
                         Logger.d("e:" + e.getMessage());
+                        mView.setDataList(new ArrayList<DailyData>(mCache));
                         mView.setLoadingIndicator(false);
                     }
 
