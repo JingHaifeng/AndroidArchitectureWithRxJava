@@ -1,5 +1,7 @@
 package com.alphabet.aawr.data;
 
+import com.alphabet.aawr.daily.data.BaseData;
+
 import java.util.List;
 
 /**
@@ -8,13 +10,13 @@ import java.util.List;
 public class TestData {
     public boolean error;
 
-    List<FuliData> results;
+    List<BaseData> results;
 
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("error:").append(error).append("\n");
-        for (FuliData result : results) {
+        for (BaseData result : results) {
             sb.append("{")
                     .append(result.toString())
                     .append("}\n");

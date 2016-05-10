@@ -1,7 +1,6 @@
-package com.alphabet.aawr.fuli;
+package com.alphabet.aawr.daily;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
@@ -20,14 +19,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.alphabet.aawr.R;
-import com.alphabet.aawr.data.FuliData;
-import com.alphabet.aawr.detail.FuliDetailActivity;
-import com.alphabet.aawr.fuli.widget.ViewPagerLayoutManager;
+import com.alphabet.aawr.daily.data.DailyData;
+import com.alphabet.aawr.detail.DailyDetailActivity;
+import com.alphabet.aawr.daily.widget.ViewPagerLayoutManager;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.engine.DiskCacheStrategy;
-import com.bumptech.glide.load.resource.drawable.GlideDrawable;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 import com.orhanobut.logger.Logger;
 
 import java.util.ArrayList;
@@ -40,9 +35,9 @@ import butterknife.Unbinder;
 /**
  * Created by alphabet on 5/2/16.
  */
-public class FuliFragment extends Fragment implements FuliContract.View {
+public class DailyFragment extends Fragment implements DailyContract.View {
 
-    private FuliContract.Presenter mPresenter;
+    private DailyContract.Presenter mPresenter;
 
     private boolean isLoading;
 
@@ -61,12 +56,12 @@ public class FuliFragment extends Fragment implements FuliContract.View {
     private Unbinder mUnbinder;
     private LinearLayoutManager mLinearLayoutManager;
 
-    public FuliFragment() {
+    public DailyFragment() {
 
     }
 
-    public static FuliFragment newInstance() {
-        return new FuliFragment();
+    public static DailyFragment newInstance() {
+        return new DailyFragment();
     }
 
     @Override
@@ -128,7 +123,7 @@ public class FuliFragment extends Fragment implements FuliContract.View {
     }
 
     @Override
-    public void setPresenter(FuliContract.Presenter presenter) {
+    public void setPresenter(DailyContract.Presenter presenter) {
         mPresenter = presenter;
     }
 
@@ -148,9 +143,11 @@ public class FuliFragment extends Fragment implements FuliContract.View {
     }
 
     @Override
-    public void setDataList(List<FuliData> fuliDataList) {
-        mAdapter.setFuliDatas(fuliDataList);
+    public void setDataList(List<DailyData> baseDataList) {
+        mAdapter.setBaseDatas(baseDataList);
+
     }
+
 
     @Override
     public void allCompleted(boolean completed) {
@@ -163,20 +160,11 @@ public class FuliFragment extends Fragment implements FuliContract.View {
         Toast.makeText(getContext(), error, Toast.LENGTH_SHORT).show();
     }
 
-    public void startFuliDetailActivity(final View transitView, final FuliData fuliData) {
-//        Glide.with(this).load(fuliData.url).listener(new RequestListener<String, GlideDrawable>() {
-//            @Override
-//            public boolean onException(Exception e, String model, Target<GlideDrawable> target, boolean isFirstResource) {
-//                Toast.makeText(getContext(), fuliData.url + " load failed", Toast.LENGTH_SHORT);
-//                return false;
-//            }
-//
-//            @Override
-//            public boolean onResourceReady(GlideDrawable resource, String model, Target<GlideDrawable> target, boolean isFromMemoryCache, boolean isFirstResource) {
-        Intent intent = FuliDetailActivity.newIntent(getContext(), fuliData);
+    public void startDailyDetailActivity(final View transitView, final DailyData baseData) {
+        Intent intent = DailyDetailActivity.newIntent(getContext(), baseData);
         ActivityOptionsCompat optionsCompat
                 = ActivityOptionsCompat.makeSceneTransitionAnimation(
-                getActivity(), transitView, FuliDetailActivity.TRANSIT_PIC);
+                getActivity(), transitView, DailyDetailActivity.TRANSIT_PIC);
         try {
             ActivityCompat.startActivity(getActivity(), intent,
                     optionsCompat.toBundle());
@@ -184,35 +172,13 @@ public class FuliFragment extends Fragment implements FuliContract.View {
             e.printStackTrace();
             startActivity(intent);
         }
-//                return false;
-//            }
-//        });
-
-//        Glide.with(getActivity())
-//                .load(fuliData.url)
-//                .asBitmap()
-//                .dontAnimate()
-//                .diskCacheStrategy(DiskCacheStrategy.SOURCE)
-//                .listener(new RequestListener<String, Bitmap>() {
-//                    @Override
-//                    public boolean onException(Exception e, String model, Target<Bitmap> target, boolean isFirstResource) {
-//                        Logger.d("onException");
-//                        return false;
-//                    }
-//
-//                    @Override
-//                    public boolean onResourceReady(Bitmap resource, String model, Target<Bitmap> target, boolean isFromMemoryCache, boolean isFirstResource) {
-//                        Logger.d("onResourceReady");
-//                        return false;
-//                    }
-//                });
     }
 
     class ItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @BindView(R.id.pic)
         ImageView mPic;
 
-        FuliData mFuliData;
+        DailyData mBaseData;
 
         public ItemViewHolder(View itemView) {
             super(itemView);
@@ -224,20 +190,20 @@ public class FuliFragment extends Fragment implements FuliContract.View {
         @Override
         public void onClick(View v) {
             Logger.d("ViewHolder onClick per");
-            if (mFuliData != null) {
-                startFuliDetailActivity(mPic, mFuliData);
+            if (mBaseData != null) {
+                startDailyDetailActivity(mPic, mBaseData);
             }
         }
     }
 
     private class Adapter extends RecyclerView.Adapter<ItemViewHolder> {
 
-        private List<FuliData> mFuliDatas;
+        private List<DailyData> mBaseDatas;
         private Fragment mFragment;
         private View mEmptyView;
 
         public Adapter(Fragment fragment, View emptyView) {
-            mFuliDatas = new ArrayList<>();
+            mBaseDatas = new ArrayList<>();
             mFragment = fragment;
             mEmptyView = emptyView;
         }
@@ -250,21 +216,21 @@ public class FuliFragment extends Fragment implements FuliContract.View {
 
         @Override
         public void onBindViewHolder(ItemViewHolder holder, int position) {
-            FuliData fuliData = mFuliDatas.get(position);
-            holder.mFuliData = fuliData;
+            DailyData baseData = mBaseDatas.get(position);
+            holder.mBaseData = baseData;
             Glide.with(mFragment)
-                    .load(fuliData.url)
+                    .load(baseData.results.fuliList.get(0).url)
                     .into(holder.mPic);
         }
 
         @Override
         public int getItemCount() {
-            return mFuliDatas.size();
+            return mBaseDatas.size();
         }
 
-        public void setFuliDatas(List<FuliData> fuliDatas) {
-            mFuliDatas = fuliDatas;
-            mEmptyView.setVisibility(fuliDatas.isEmpty() ? View.VISIBLE : View.GONE);
+        public void setBaseDatas(List<DailyData> baseDatas) {
+            mBaseDatas = baseDatas;
+            mEmptyView.setVisibility(baseDatas.isEmpty() ? View.VISIBLE : View.GONE);
             notifyDataSetChanged();
         }
 

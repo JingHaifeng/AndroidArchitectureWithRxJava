@@ -1,6 +1,7 @@
-package com.alphabet.aawr.fuli;
+package com.alphabet.aawr.daily;
 
-import com.alphabet.aawr.data.FuliData;
+import com.alphabet.aawr.daily.data.BaseData;
+import com.alphabet.aawr.daily.data.DailyData;
 import com.alphabet.lib.mvp.BaseView;
 import com.alphabet.lib.mvp.BasePresenter;
 
@@ -9,7 +10,7 @@ import java.util.List;
 /**
  * Created by alphabet on 5/2/16.
  */
-public interface FuliContract {
+public interface DailyContract {
 
     interface Presenter extends BasePresenter {
 
@@ -23,7 +24,7 @@ public interface FuliContract {
 
         void setLoadingIndicator(boolean indicator);
 
-        void setDataList(List<FuliData> fuliDataList);
+        void setDataList(List<DailyData> baseDataList);
 
         void allCompleted(boolean completed);
 

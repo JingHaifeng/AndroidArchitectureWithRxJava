@@ -1,4 +1,4 @@
-package com.alphabet.aawr.data;
+package com.alphabet.aawr.daily.data;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -6,7 +6,7 @@ import android.os.Parcelable;
 /**
  * Created by alphabet on 5/2/16.
  */
-public class FuliData implements Parcelable {
+public class BaseData implements Parcelable {
 
     /**
      * _id : 5722b27b67765974fbfcf9b9
@@ -30,7 +30,7 @@ public class FuliData implements Parcelable {
     public boolean used;
     public String who;
 
-    protected FuliData(Parcel in) {
+    protected BaseData(Parcel in) {
         _id = in.readString();
         createdAt = in.readString();
         desc = in.readString();
@@ -42,15 +42,15 @@ public class FuliData implements Parcelable {
         who = in.readString();
     }
 
-    public static final Creator<FuliData> CREATOR = new Creator<FuliData>() {
+    public static final Creator<BaseData> CREATOR = new Creator<BaseData>() {
         @Override
-        public FuliData createFromParcel(Parcel in) {
-            return new FuliData(in);
+        public BaseData createFromParcel(Parcel in) {
+            return new BaseData(in);
         }
 
         @Override
-        public FuliData[] newArray(int size) {
-            return new FuliData[size];
+        public BaseData[] newArray(int size) {
+            return new BaseData[size];
         }
     };
 

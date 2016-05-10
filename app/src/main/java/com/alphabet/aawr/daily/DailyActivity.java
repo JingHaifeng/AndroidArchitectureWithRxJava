@@ -1,4 +1,4 @@
-package com.alphabet.aawr.fuli;
+package com.alphabet.aawr.daily;
 
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -10,7 +10,7 @@ import com.alphabet.lib.utils.ActivityUtils;
 /**
  * Created by alphabet on 5/2/16.
  */
-public class FuliActivity extends AppCompatActivity {
+public class DailyActivity extends AppCompatActivity {
 
 
     @Override
@@ -18,13 +18,13 @@ public class FuliActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fuli);
 
-        FuliFragment fuliFragment = (FuliFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
-        if (fuliFragment == null) {
-            fuliFragment = FuliFragment.newInstance();
+        DailyFragment dailyFragment = (DailyFragment) getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+        if (dailyFragment == null) {
+            dailyFragment = DailyFragment.newInstance();
             ActivityUtils.replaceFragmentToActivity(getSupportFragmentManager(),
-                    fuliFragment, R.id.fragment_container);
+                    dailyFragment, R.id.fragment_container);
         }
 
-        new FuliPresenter(fuliFragment);
+        new DailyPresenter(dailyFragment);
     }
 }

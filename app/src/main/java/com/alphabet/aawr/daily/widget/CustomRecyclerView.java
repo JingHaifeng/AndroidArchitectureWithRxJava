@@ -1,4 +1,4 @@
-package com.alphabet.aawr.fuli.widget;
+package com.alphabet.aawr.daily.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;

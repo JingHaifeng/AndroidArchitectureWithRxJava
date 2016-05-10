@@ -36,4 +36,5 @@ dependencies {
     apt 'com.jakewharton:butterknife-compiler:8.0.1'
     compile 'com.orhanobut:logger:1.11'
     compile 'com.lsjwzh:recyclerviewpager:1.0.8'
+    compile 'com.android.support:design:23.3.0'
 }

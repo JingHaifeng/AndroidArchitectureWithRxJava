@@ -1,10 +1,10 @@
 package com.alphabet.aawr.api;
 
-import com.alphabet.aawr.data.FuliData;
-import com.alphabet.aawr.data.HttpResult;
-import com.alphabet.aawr.data.TestData;
+import com.alphabet.aawr.daily.data.BaseData;
+import com.alphabet.aawr.daily.data.DailyData;
+import com.alphabet.aawr.daily.data.HistoryData;
+import com.alphabet.aawr.daily.data.HttpResult;
 
-import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
 import rx.Observable;
@@ -17,11 +17,11 @@ public interface GankApi {
     public static final int PAGE_SIZE = 5;
 
     @GET("data/福利/" + GankApi.PAGE_SIZE + "/{page}")
-    Call<TestData> getFuliDataTest(@Path("page") int page);
+    Observable<HttpResult<BaseData>> getDailyPageData(@Path("page") int page);
 
-    @GET("data/福利/" + GankApi.PAGE_SIZE + "/{page}")
-    Observable<TestData> getFuliDataTest2(@Path("page") int page);
+    @GET("day/history")
+    Observable<HistoryData> getHistoryData();
 
-    @GET("data/福利/" + GankApi.PAGE_SIZE + "/{page}")
-    Observable<HttpResult<FuliData>> getFuliPageData(@Path("page") int page);
+    @GET("day/{year}/{month}/{day}")
+    Observable<DailyData> getDailyData(@Path("year") int year, @Path("month") int month, @Path("day") int day);
 }

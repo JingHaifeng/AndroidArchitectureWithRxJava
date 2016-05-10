@@ -1,4 +1,4 @@
-package com.alphabet.aawr.data;
+package com.alphabet.aawr.daily.data;
 
 import java.util.List;
 
